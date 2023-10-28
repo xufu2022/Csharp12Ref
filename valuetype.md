@@ -273,3 +273,148 @@ Simplified Array Initialization Expressions
     char[] vowels = ['a','e','i','o','u'];
 
 ```
+
+## Variables and Parameters
+
+A variable represents a storage location that has a modifiable value. A variable can be a local variable, parameter (value, ref, out, or in), field (instance or static), or array element.
+
+## The Stack and the Heap
+
+The stack and the heap are the places where variables reside. Each has very different lifetime semantics
+
+### Stack
+The stack is a block of memory for storing local variables and parameters.
+
+The stack logically grows and shrinks as a method or function is entered and exited. Consider the following method (to avoid distraction, input argument checking is ignored):
+
+```csharp
+static int Factorial (int x)
+{
+    if (x == 0) return 1;
+    return x * Factorial (x-1);
+}
+
+```
+This method is recursive, meaning that it calls itself. Each time the method is entered, a new int is allocated on the stack, and each time the method exits, the int is deallocated
+
+### Heap
+The heap is the memory in which objects (i.e., reference type instances) reside. Whenever a new object is created, it is allocated on the heap, and a reference to that object is returned. During a program’s execution, the heap starts filling up as new objects are created. The runtime has a garbage collector that periodically deallocates objects from the heap so your program does not run out of memory. An object is eligible for deallocation as soon as it’s not referenced by anything that is itself alive
+
+The heap also stores static fields and constants. Unlike objects allocated on the heap (which can be garbage-collected), these live until the application domain is torn down
+
+A parameter can be passed by reference or by value, regardless of whether the parameter type is a reference type or a value type.
+
+```csharp
+
+The in modifier, introduced in C# 7.2, allows you to pass arguments by reference but ensures they are read-only within the called method. This means the method cannot modify the argument's value.
+
+        static void PrintVector(in Vector v)
+        {
+            // Reading is allowed
+            Console.WriteLine($"X: {v.X}, Y: {v.Y}");
+
+            // Uncommenting the following line will cause a compile-time error because we're trying to modify 'v'.
+            // v.X = 100;
+        }
+
+        PrintVector(in largeStruct);
+
+```
+### Out variables and discards
+
+```csharp
+
+int.TryParse ("123", out int x);
+Console.WriteLine (x);
+
+// equivalent to:
+
+int x;
+int.TryParse ("123", out x);
+Console.WriteLine (x);
+
+// When calling methods with multiple out parameters, you can use an underscore to “discard” any in which you’re uninterested
+SomeBigMethod (out _, out _, out int x, out _, out _);
+Console.WriteLine (x);
+
+// Deconstruction
+var tuple = (1, "John", "Doe");
+var (id, _, _) = tuple; // Only interested in the ID
+Console.WriteLine(id);
+
+// Pattern Matching:
+object someValue = "Hello";
+if (someValue is string _)
+{
+    Console.WriteLine("It's a string!");
+}
+
+// Lambda Expressions:
+SomeEvent += (_, _) => { Console.WriteLine("Event triggered!"); };
+```
+
+### Optional parameters
+
+Adding an optional parameter to a public method that’s called from another assembly requires recompilation of both assemblies—just as though the parameter were mandatory.
+
+Note: Now, imagine you change the default value in the method declaration and recompile only that assembly. The calling assembly is still using the old default value because it has the old value baked into its compiled code. To get the calling assembly to use the new default value, you'd need to recompile it.
+
+## Named arguments
+
+Rather than identifying an argument by position, you can identify an argument by name. For example:
+
+```csharp
+Foo (x:1, y:2); // 1, 2
+void Foo (int x, int y)
+{
+Console.WriteLine (x + ", " + y);
+}
+// Named arguments can occur in any order. The following calls to Foo are semantically identical:
+Foo (x:1, y:2);
+Foo (y:2, x:1);
+// You can mix named and positional arguments, as long as the named arguments appear last:
+Foo (1, y:2);
+
+// Named arguments are particularly useful in conjunction with optional parameters. For instance, consider the following method:
+void Bar (int a=0, int b=0, int c=0, int d=0) { ... }
+// You can call this, supplying only a value for d, as follows:
+Bar (d:3);
+
+```
+
+### Target-Typed new Expressions
+Another way to reduce lexical repetition is with target-typed new expressions (from C# 9):
+
+```csharp
+StringBuilder sb1 = new();
+StringBuilder sb2 = new ("Test");
+
+```
+
+## Operator Table
+
+| Operator symbol | Operator name | Example Overloadable |
+|--------------|-----------|------------| -------------- |
+| \'  | Single quote      |  0x0027     |
+.           Member access                x.y            No
+?.          Null conditional             x?.y           No
+!           (postfix) Null-forgiving     x!.y           No
+->          Pointer to struct (unsafe)   x->y           No
+()          Function call                x()            No
+[]          Array/index                  a[x]           Via indexer
+++          Post increment               x++            Yes
+--          Post decrement               x--            Yes
+new         Create instance              new Foo()      No
+stackalloc  Stack allocation             stackalloc(10) No
+typeof      Get type from identifier     typeof(int)    No
+
+nameof      Get name of identifier       nameof(x)      No
+checked     Integral overflow check on   checked(x)     No
+unchecked   Integral overflow check off  unchecked(x)   No
+default     Default value                default(char)  No
+sizeof      Get size of struct           sizeof(int)    No
+
+.. ..^      Range of indices             x..y x..^y     No
+switch      Switch expression            num switch {1 => true,_ => false} No
+with        With expression              rec with { X = 123 }   No
+
