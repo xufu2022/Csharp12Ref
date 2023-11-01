@@ -198,7 +198,98 @@ void Foo (string? s)
     if (s != null) Console.Write (s.Length);
 }
 ```
+## ## Extension Methods
 ```csharp
+// Interfaces can be extended
+public static T First<T> (this IEnumerable<T> sequence)
+{
+    foreach (T element in sequence)
+        return element;
+    throw new InvalidOperationException ("No elements!");
+}
+...
+Console.WriteLine ("Seattle".First()); // S
+
+public static class StringHelper
+{
+    public static string Pluralize (this string s) {...}
+    public static string Capitalize (this string s) {...}
+}
+
+string x = "sausage".Pluralize().Capitalize();
+string y = StringHelper.Capitalize(StringHelper.Pluralize ("sausage"));
+
+public static class StringExtensions
+{
+    // Extension method for the string type
+    public static void Print(this string str, int number)
+    {
+        Console.WriteLine($"{str} {number}");
+    }
+}
+
+public class CustomString
+{
+    // Instance method with a different signature
+    public void Print(object obj)
+    {
+        Console.WriteLine($"Instance method called with: {obj}");
+    }
+}
+
+var customString = new CustomString();
+        customString.Print(42); // This will call the instance method, not the extension method.
+// If you explicitly want to call the extension method, you have to treat the object as string:
+        StringExtensions.Print(customString as dynamic, 42); // This will call the extension method.
+```
+
+## Tuples
+Like anonymous types, tuples (C# 7+) provide a simple way to store a set of values. Tuples were introduced into C# with the main purpose of allowing methods to return multiple values without resorting to out parameters(something you cannot do with anonymous types). Since then, however, records have been introduced, offering a concise typed approach that we will describe in the following section.
+
+
+```csharp
+var bob = ("Bob", 23);
+Console.WriteLine (bob.Item1); // Bob
+Console.WriteLine (bob.Item2); // 23
+(string,int) bob = ("Bob", 23);
+
+(string,int) person = GetPerson();
+Console.WriteLine (person.Item1); // Bob
+Console.WriteLine (person.Item2); // 23
+(string,int) GetPerson() => ("Bob", 23);
+
+Task<(string,int)>
+Dictionary<(string,int),Uri>
+IEnumerable<(int ID, string Name)> // See below...
+
+```
+## Naming Tuple Elements
+
+```csharp
+var tuple = (Name:"Bob", Age:23);
+Console.WriteLine (tuple.Name); // Bob
+Console.WriteLine (tuple.Age); // 23
+
+static (string Name, int Age) GetPerson() => ("Bob",23);
+
+// Element names are automatically inferred from property or field names:
+var now = DateTime.Now;
+var tuple = (now.Day, now.Month, now.Year);
+Console.WriteLine (tuple.Day); // OK
+
+```
+
+Tuples are syntactic sugar for using a family of generic structs called ValueTuple<T1> and ValueTuple<T1,T2>, which have fields named Item1, Item2, and so on. Hence (string,int) is an alias for ValueTuple<string,int>. This means that “named elements” exist only in the source code—and the imagination of the compiler—and mostly disappear at runtime
+
+## Deconstructing Tuples
+Tuples implicitly support the deconstruction pattern (see “Deconstructors”), so you can easily deconstruct a tuple into individual variables. Consider the following:
+
+```csharp
+var bob = ("Bob", 23);
+string name = bob.Item1;
+int age = bob.Item2;
+// Deconstructing Tuples
+(string name, int age) = bob; // Deconstruct bob into // name and age.
 ```
 ```csharp
 ```
