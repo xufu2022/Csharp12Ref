@@ -353,4 +353,31 @@ public struct Point
 }
 ```
 
-## readonly Structs and Functions (need understanding)
+## readonly Structs and Functions 
+
+apply the readonly modifier to a struct to enforce that all fields are readonly; this aids in declaring intent as well as allowing the compiler more optimization freedom:
+
+```csharp 
+readonly struct Point
+{
+    public readonly int X, Y; // X and Y must be readonly
+}
+
+// If you need to apply readonly at a more granular level, you can apply the readonly modifier (from C# 8) to a struct’s functions. This ensures that if the function attempts to modify any field, a compile-time error is generated:
+struct Point
+{
+    public int X, Y;
+    public readonly void ResetX() => X = 0; // Error!
+}
+
+// If a readonly function calls a non-readonly function, the compiler generates a warning (and defensively copies the struct to avoid the possibility of a mutation)
+```
+
+## Access Modifiers
+
+-   public
+-   internal : Accessible only within the containing assembly or friend assemblies. This is the default accessibility for non-nested types
+-   private  : Accessible only within the containing type
+-   private protected : The intersection of protected and internal accessibility (this is more restrictive than protected or internal alone).
+-   protected internal: The union of protected and internal accessibility (this is more permissive than protected or internal alone in that it makes a member more accessible in two ways)
+-   file (from C# 11) : Accessible only from within the same file. Intended for use by source generators (see “Extended partial methods”). This modifier can be applied only to type declarations
