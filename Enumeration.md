@@ -291,7 +291,3 @@ int age = bob.Item2;
 // Deconstructing Tuples
 (string name, int age) = bob; // Deconstruct bob into // name and age.
 ```
-```csharp
-```
-```csharp
-```
