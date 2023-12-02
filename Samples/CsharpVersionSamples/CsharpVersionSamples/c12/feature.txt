@@ -1,0 +1,18 @@
+﻿
+Primary Constructors: Simplifies the syntax for declaring constructors in classes and structs, not just in records.
+
+Collection Expressions: Introduces a new syntax to create common collection types, such as arrays and lists.
+
+Inline Arrays: Enables the creation of arrays of fixed size in a struct type, improving performance.
+
+Optional Parameters in Lambda Expressions: Allows defining default values for parameters in lambda expressions.
+
+ref readonly Parameters: Enhances the clarity for APIs using ref or in parameters.
+
+Alias Any Type: Permits using the using alias directive to alias any type, including tuple types, array types, pointer types, etc.
+
+Experimental Attribute: Marks types, methods, or assemblies as experimental, with the compiler issuing a warning when accessing them.
+
+Interceptors: An experimental feature in C# 12 that enables method interception in source generation, useful for modifying code during compilation​​.
+
+These features represent continued enhancements in C# for more concise syntax, better performance, and clearer API design.
