@@ -1,0 +1,14 @@
+Raw string literals
+Generic math support
+Generic attributes
+UTF-8 string literals
+Newlines in string interpolation expressions
+List patterns
+File-local types
+Required members
+Auto-default structs
+Pattern match Span<char> on a constant string
+Extended nameof scope
+Numeric IntPtr
+Improved method group conversion to delegate
+Warning wave 7
